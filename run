@@ -21,7 +21,7 @@ if [ ! -f $HOME/.mlb/config ]
 then
     echo "Run mlbviewer first to initialize configuration file"
 else
-    # Start mlbtv-control
+    # Start mlbviewer-remote
     PYTHONPATH=`cat $SETTINGS_FILE` python2.7 mlbviewer-remote.py
 fi
 
