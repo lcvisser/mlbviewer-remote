@@ -20,9 +20,10 @@ MLB_DEFAULTS = {'video_follow': [],
                 'audio_follow': [],
                 'blackout': [],
                 'favorite': 'DET'}
+TZ_OFFSET = 1
 
-#TODO: this should probably be done on a per-session basis
 # Load config
+#TODO: this should probably be done on a per-session basis
 config = MLBConfig(MLB_DEFAULTS)
 config.loads(MLB_CONFIG_FILE)
 
@@ -115,7 +116,7 @@ def watch(year, month, day, index):
     today = datetime.datetime.today()
     gameday = datetime.datetime(year=int(year), month=int(month), day=int(day))
     delta = gameday - today
-    return flask.redirect('/index?offset=%i&game=%i' % (delta.days, int(index)))
+    return flask.redirect('/index?offset=%i&game=%i' % (delta.days+TZ_OFFSET, int(index)))
 
 
 @app.route('/stop/<year>/<month>/<day>/')
@@ -124,7 +125,7 @@ def stop(year, month, day):
     today = datetime.datetime.today()
     gameday = datetime.datetime(year=int(year), month=int(month), day=int(day))
     delta = gameday - today
-    return flask.redirect('/index?offset=%i' % delta.days)
+    return flask.redirect('/index?offset=%i' % (delta.days+TZ_OFFSET))
 
 
 ## Start application
