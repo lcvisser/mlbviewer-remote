@@ -1,0 +1,27 @@
+#!/bin/bash
+
+SETTINGS_FILE=".settings"
+
+while [ ! -f $SETTINGS_FILE ]
+do
+    # Ask user for path to mlbviewer
+    read -e -p "path to mlbviewer: " mlbv_path
+
+    # Check that path is indeed to mlbviewer
+    if [ -d "$mlbv_path/MLBviewer" ]
+    then
+        echo "$mlbv_path" > $SETTINGS_FILE
+    else
+        echo "invalid path: $mlbv_path"
+    fi
+done
+
+# Check if mlbviewer settings exist
+if [ ! -f $HOME/.mlb/config ]
+then
+    echo "Run mlbviewer first to initialize configuration file"
+else
+    # Start mlbtv-control
+    PYTHONPATH=`cat $SETTINGS_FILE` python2.7 mlbviewer-remote.py
+fi
+
