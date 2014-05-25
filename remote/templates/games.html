@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+ {% for game in games %}
+  {% if game.watching == 1 %}
+  <div class="game watching">
+  <a href="{{ url_for('stop', year=date.year, month=date.month, day=date.day) }}">
+  {% else %}
+  <div class="game">
+  <a href="{{ url_for('watch', year=date.year, month=date.month, day=date.day, index=game.index) }}">
+  {% endif %}
+   <div class="game_info">
+    <div class="team_info away">
+     <img class="team_logo away" alt="{{ game.away_name }}" src="http://mlb.mlb.com/mlb/images/team_logos/logo_{{ game.away_code }}_79x76.jpg">
+     <span class="away">{{ game.away_name }}</span>
+    </div>
+    <div class="team_info home">
+     <img class="team_logo home" alt="{{ game.home_name }}" src="http://mlb.mlb.com/mlb/images/team_logos/logo_{{ game.home_code }}_79x76.jpg">
+     <span class="home">{{ game.home_name }}</span>
+    </div>
+   </div>
+  </div>
+ {% endfor %}
+{% endblock %}

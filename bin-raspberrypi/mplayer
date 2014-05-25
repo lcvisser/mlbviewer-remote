@@ -1,0 +1,11 @@
+#!/bin/bash
+
+MLBTV_PIPE=mlbpipe
+
+if [ ! -p $MLBTV_PIPE ]
+then
+    mkfifo $MLBTV_PIPE
+fi
+
+cat <&0 > $MLBTV_PIPE
+

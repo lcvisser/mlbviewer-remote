@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Load settings
+. bin/settings.sh
+load_settings
+echo $MLBVIEWER_REMOTE_SETTINGS
+exit 0
+
+# Check if mlbviewer settings exist
+if [ ! -f $HOME/.mlb/config ]
+then
+    echo "Run mlbviewer first to initialize configuration file"
+else
+    # Start mlbviewer-remote
+    (cd remote; PYTHONPATH=`cat $SETTINGS_FILE` python2.7 mlbviewer-remote.py)
+fi
+

@@ -1,0 +1,98 @@
+a {
+ color: inherit;
+ text-decoration: none;
+}
+
+a:hover {
+ text-decoration: none;
+}
+
+a:visited {
+ text-decoration: none;
+}
+
+div {
+ font-family: Arial, sans-serif;
+ font-size: 1.05em;
+}
+
+div.game {
+ background: #ffffff;
+ border: 1px solid #ffffff;
+ clear: both;
+ display: block;
+ margin-bottom: 5px;
+ margin-left: auto;
+ margin-right: auto;
+ margin-top: 5px;
+ padding: 2px;
+ position: relative;
+ width: 100%;
+}
+
+div.game:hover {
+ background-color: #c5e6ff;
+ border: 1px solid #000000;
+}
+
+div.game_info {
+ overflow: hidden;
+ display: block;
+ width: 100%;
+}
+
+div.team_info {
+ height: 42px;
+ line-height: 40px;
+ width: 45%;
+}
+
+div.team_name {
+}
+
+div.watching {
+ background: #6eebcc;
+ border: 1px solid #000000;
+}
+
+div#wrapper {
+ border: 1px solid;
+ margin-left: auto;
+ margin-right: auto;
+ padding: 10px;
+ position: relative;
+}
+
+h1 {
+ font-size: 1.3em;
+ text-align: center;
+}
+
+img.button {
+ height: 30px;
+ width: 30px;
+}
+
+img.button#prev {
+ float: left;
+}
+
+img.button#next {
+ float: right;
+}
+
+img.team_logo {
+ height: 38px;
+ width: 40px;
+ padding-left: 10px;
+ padding-right: 10px;
+ vertical-align: middle;
+}
+
+.away {
+ float: left;
+}
+
+.home {
+ float: right;
+}
