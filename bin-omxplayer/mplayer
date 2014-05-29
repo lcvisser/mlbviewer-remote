@@ -7,5 +7,5 @@ then
     mkfifo $MLBTV_PIPE
 fi
 
-cat <&0 > $MLBTV_PIPE
+cat <&0 > $MLBTV_PIPE | omxplayer -o hdmi $MLBTV_PIPE
 
