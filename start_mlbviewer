@@ -1,21 +1,20 @@
 #!/bin/bash
 
-SETTINGS_FILE=".settings"
+# Load settings
+. bin/settings.sh
+load_settings
+settings=(${MLBVIEWER_REMOTE_SETTINGS//:/ })
 
-while [ ! -f $SETTINGS_FILE ]
-do
-    # Ask user for path to mlbviewer
-    read -e -p "path to mlbviewer: " mlbv_path
+# Note that settings are read in reverse order
+mlbviewer_path=${settings[1]}
+mplayer_path=${settings[0]}
 
-    # Check that path is indeed to mlbviewer
-    if [ -d "$mlbv_path/MLBviewer" ]
-    then
-        echo "$mlbv_path" > $SETTINGS_FILE
-    else
-        echo "invalid path: $mlbv_path"
-    fi
-done
+# Add mplayer path in front of the environment
+if [ -n $mplayer_path ]
+then
+    export PATH=$mplayer_path:$PATH
+fi
 
-# Start mlbviewer-remote
-PYTHONPATH=`cat $SETTINGS_FILE` python2.7 mlbviewer-remote.py
+# Start mlbviewer
+(cd $mlbviewer_path; python2.7 mlbviewer.py)
 

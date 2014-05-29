@@ -33,8 +33,8 @@ function load_settings() {
     do
         if [[ $setting != '#'* ]]
         then
-            path=$(cd $setting; pwd)
-            export MLBVIEWER_REMOTE_SETTINGS=$path:$MLBVIEWER_REMOTE_SETTINGS
+            s=$(cd $setting; pwd)
+            export MLBVIEWER_REMOTE_SETTINGS=$s:$MLBVIEWER_REMOTE_SETTINGS
         fi
     done < $SETTINGS_FILE
 }
