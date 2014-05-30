@@ -8,124 +8,148 @@
 
 import datetime
 import flask
+import os
+import time
 
-from MLBviewer import MLBConfig, MLBSchedule, MLBSession
-from MLBviewer import MediaStream
-from MLBviewer import TEAMCODES
+from MLBviewer import MLBConfig, MLBGameTime, MLBSchedule, MLBSession
+from MLBviewer import AUTHDIR, AUTHFILE, TEAMCODES
 
 ## Set up mlbviewer
-#TODO: this needs to be loaded from user input
-MLB_CONFIG_FILE = '/Users/ludo/.mlb/config'
-MLB_DEFAULTS = {'video_follow': [],
-                'audio_follow': [],
-                'blackout': [],
-                'favorite': 'DET'}
-TZ_OFFSET = 1
+# Bare minimum defaults for mlbviewer
+MLBVIEWER_DEFAULTS = {'video_follow': [],
+                      'audio_follow': [],
+                      'blackout': [],
+                      'favorite': []}
 
 # Load config
-#TODO: this should probably be done on a per-session basis
-config = MLBConfig(MLB_DEFAULTS)
-config.loads(MLB_CONFIG_FILE)
+config_dir = os.path.join(os.environ['HOME'], AUTHDIR)
+config_file = os.path.join(config_dir, AUTHFILE)
+config = MLBConfig(MLBVIEWER_DEFAULTS)
+config.loads(config_file)
 
-# Start MLB.TV session
-session = MLBSession(
-    user=config.data['user'],
-    passwd=config.data['pass'],
-    debug=config.data['debug'])
-session.getSessionData()
+# Session placeholder
+session = None
 
-## Helper functions
-def get_schedule(ymd, config):
-    schedule = MLBSchedule(ymd_tuple=ymd)
-    listing = schedule.getListings(config.data['speed'], config.data['blackout'])
-    return listing
+# Current game
+watching = None
+
 
 ## Application
-# Instantiate application
+# Application instance
 app = flask.Flask(__name__)
 
 @app.route('/')
 @app.route('/index')
 def index():
-    # Determine requested day
-    schedule_date = datetime.date.today()
-    offset = flask.request.args.get('offset')
-    if offset is not None:
-        try:
-            offset = int(offset)
-        except ValueError:
-            offset = 0
-    else:
-        offset= 0
-    delta = datetime.timedelta(days=offset)
-    schedule_date += delta
+    global session
+    global watching
     
-    # Determine if a game is being watched
-    watching = flask.request.args.get('game')
+    # Check if a game is being watched
     if watching is not None:
-        watching = int(watching)
+        return flask.render_template('watching.html', game=watching)
+    
+    # Get "today", correct for local timezone and eastern timezone
+    now = datetime.datetime.now()
+    gametime = MLBGameTime(now)
+    t = time.localtime()
+    local_zone = (time.timezone, time.altzone)[t.tm_isdst]
+    local_offset = datetime.timedelta(0, local_zone)
+    eastern_offset = gametime.utcoffset()
+    
+    # Get requested offset
+    request_offset = flask.request.args.get('offset')
+    if request_offset is not None:
+        try:
+            request_offset = int(request_offset)
+        except ValueError:
+            request_offset = 0
     else:
-        watching = -1
+        request_offset= 0
+    view_offset = datetime.timedelta(days=request_offset)
     
-    # Set navigation parameters
-    nav = {}
-    nav['prev'] = offset - 1
-    nav['next'] = offset + 1
+    # Determine request
+    view_day = now + local_offset - eastern_offset + view_offset
+    schedule_date = (view_day.year, view_day.month, view_day.day)
     
+    # Start MLB.TV session
+    if session is None:
+        session = MLBSession(user=config.data['user'], passwd=config.data['pass'])
+        session.getSessionData()
+
     # Get game listing for requested day
-    ymd = (schedule_date.year, schedule_date.month, schedule_date.day)
-    schedule = get_schedule(ymd, config)
+    schedule = MLBSchedule(ymd_tuple=schedule_date)
+    listing = schedule.getListings(config.data['speed'], config.data['blackout'])
     
     # Parse game data
     games = []
-    for index, gamedata in enumerate(schedule):
-        away = gamedata[0]['away']
-        home = gamedata[0]['home']
-        game = {}
-        game['index'] = index
-        game['away_code'] = away
-        game['away_name'] = TEAMCODES[away][1]
-        game['home_code'] = home
-        game['home_name'] = TEAMCODES[home][1]
-        game['watching'] = 1 if index == watching else 0
-        games.append(game)
+    for index, gamedata in enumerate(listing):
+        if gamedata[5] in ('I', 'CG'):  #TODO: can pre-game be added?
+            # Game in progress or condensed game available
+            away = gamedata[0]['away']
+            home = gamedata[0]['home']
+            game = {}
+            game['away_code'] = away
+            game['away_name'] = TEAMCODES[away][1]
+            game['home_code'] = home
+            game['home_name'] = TEAMCODES[home][1]
+            games.append(game)
+    
+    # Set navigation parameters
+    nav = {}
+    nav['prev'] = request_offset - 1
+    nav['next'] = request_offset + 1
     
     # Render template
     context = {}
     context['nav'] = nav
-    context['date'] = schedule_date
+    context['date'] = view_day
     context['games'] = games
     return flask.render_template('games.html', **context)
 
 
-@app.route('/watch/<year>/<month>/<day>/<index>/')
-def watch(year, month, day, index):
-    # Get game listing for requested day
-    ymd = (int(year), int(month), int(day))
-    schedule = get_schedule(ymd, config)
+@app.route('/watch/<year>/<month>/<day>/<home>/<away>/')
+def watch(year, month, day, home, away):
+    global session
+    global watching
     
-    # Get stream
-#     stream = MediaStream(
-#         schedule[int(index)][2][0],
-#         session=session,
-#         cfg=config,
-#         start_time=None)
-#     
+    # Select video stream
+    fav = config.get('favorite')[0]
+    if fav in (home, away):
+        # Favorite team is playing
+        team = fav
+    else:
+        # Use stream of home team
+        team = home
     
-    # Redirect to gameday index
-    today = datetime.datetime.today()
-    gameday = datetime.datetime(year=int(year), month=int(month), day=int(day))
-    delta = gameday - today
-    return flask.redirect('/index?offset=%i&game=%i' % (delta.days+TZ_OFFSET, int(index)))
+    # End session
+    session = None
+    
+    # Start mlbplay
+    mm = '%02i' % int(month)
+    dd = '%02i' % int(day)
+    yy = str(year)[-2:]
+    print 'mlbplay.py v=%s j=%s/%s/%s' % (team, mm, dd, yy)
+    
+    # Render template
+    game = {}
+    game['away_code'] = away
+    game['away_name'] = TEAMCODES[away][1]
+    game['home_code'] = home
+    game['home_name'] = TEAMCODES[home][1]
+    watching = game
+    return flask.render_template('watching.html', game=game)
 
 
-@app.route('/stop/<year>/<month>/<day>/')
-def stop(year, month, day):
+@app.route('/stop/')
+def stop():
+    global watching
+    
+    # Stop mlbplay
+    print 'stop'
+    watching = None
+    
     # Redirect to gameday index
-    today = datetime.datetime.today()
-    gameday = datetime.datetime(year=int(year), month=int(month), day=int(day))
-    delta = gameday - today
-    return flask.redirect('/index?offset=%i' % (delta.days+TZ_OFFSET))
+    return flask.redirect('/index')
 
 
 ## Start application

@@ -3,14 +3,11 @@
 {% block content %}
 
   <div class="header">
-   <a href="{{ url_for('index', offset=nav.prev) }}"><img class="button" id="prev" alt="Previous day" src="{{ url_for('static', filename='img/prev.png') }}"></a>
-   <a href="{{ url_for('index', offset=nav.next) }}"><img class="button" id="next" alt="Next day" src="{{ url_for('static', filename='img/next.png') }}"></a>
-   <h1>Games for {{ date.day }}-{{ date.month }}-{{ date.year }}</h1>
+   <h1>Now watching:</h1>
   </div>
 
- {% for game in games %}
   <div class="game">
-   <a href="{{ url_for('watch', year=date.year, month=date.month, day=date.day, home=game.home_code, away=game.away_code) }}">
+   <a href="{{ url_for('stop') }}">
    <div class="game_info">
     <div class="team_info away">
      <img class="team_logo away" alt="{{ game.away_name }}" src="http://mlb.mlb.com/mlb/images/team_logos/logo_{{ game.away_code }}_79x76.jpg">
@@ -23,6 +20,5 @@
    </div>
    </a>
   </div>
- {% endfor %}
 
 {% endblock %}
