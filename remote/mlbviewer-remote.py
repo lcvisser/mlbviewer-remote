@@ -9,6 +9,8 @@
 import datetime
 import flask
 import os
+import subprocess
+import sys
 import time
 
 from MLBviewer import MLBConfig, MLBGameTime, MLBSchedule, MLBSession
@@ -32,6 +34,7 @@ session = None
 
 # Current game
 watching = None
+player = None
 
 
 ## Application
@@ -111,9 +114,10 @@ def index():
 def watch(year, month, day, home, away):
     global session
     global watching
+    global player
     
     # Select video stream
-    fav = config.get('favorite')[0]
+    fav = config.get('favorite')[0]  # TODO: handle multiple favorites
     if fav in (home, away):
         # Favorite team is playing
         team = fav
@@ -128,7 +132,8 @@ def watch(year, month, day, home, away):
     mm = '%02i' % int(month)
     dd = '%02i' % int(day)
     yy = str(year)[-2:]
-    print 'mlbplay.py v=%s j=%s/%s/%s' % (team, mm, dd, yy)
+    cmd = 'cd %s; python2.7 mlbplay.py v=%s j=%s/%s/%s' % (sys.argv[1], team, mm, dd, yy)
+    player = subprocess.Popen(cmd, shell=True)
     
     # Render template
     game = {}
@@ -143,14 +148,19 @@ def watch(year, month, day, home, away):
 @app.route('/stop/')
 def stop():
     global watching
+    global player
     
     # Stop mlbplay
-    print 'stop'
     watching = None
+    player.terminate()
     
     # Redirect to gameday index
     return flask.redirect('/index')
 
 
 ## Start application
-app.run(debug=True)
+if os.path.isdir(sys.argv[1]):
+    app.run(debug=True)
+else:
+    print 'not a valid directory: ' + sys.argv[1]
+    sys.exit(-1)

@@ -21,6 +21,6 @@ then
     echo "Run mlbviewer first to initialize configuration file"
 else
     # Start mlbviewer-remote
-    (cd remote; PYTHONPATH=$mlbviewer_path:$PYTHONPATH python2.7 mlbviewer-remote.py)
+    (cd remote; PYTHONPATH=$mlbviewer_path:$PYTHONPATH python2.7 mlbviewer-remote.py $mlbviewer_path)
 fi
 
