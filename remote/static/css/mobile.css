@@ -1,7 +1,14 @@
 body {
- font-size: 75%;
+ font-size: 70%;
 }
 
 div#wrapper {
  width: 95%;
+}
+
+img.team_logo {
+ height: 29px;
+ width: 30px;
+ padding-left: 7px;
+ padding-right: 7px;
 }
