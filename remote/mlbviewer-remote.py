@@ -9,6 +9,7 @@
 import datetime
 import flask
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -132,8 +133,8 @@ def watch(year, month, day, home, away):
     mm = '%02i' % int(month)
     dd = '%02i' % int(day)
     yy = str(year)[-2:]
-    cmd = 'cd %s; python2.7 mlbplay.py v=%s j=%s/%s/%s' % (sys.argv[1], team, mm, dd, yy)
-    player = subprocess.Popen(cmd, shell=True)
+    cmd = 'python2.7 mlbplay.py v=%s j=%s/%s/%s' % (team, mm, dd, yy)
+    player = subprocess.Popen(cmd, shell=True, cwd=sys.argv[1])
     
     # Render template
     game = {}
@@ -152,7 +153,9 @@ def stop():
     
     # Stop mlbplay
     watching = None
-    player.terminate()
+    player.send_signal(signal.SIGINT)
+    player.wait()
+    player = None
     
     # Redirect to gameday index
     return flask.redirect('/index')
