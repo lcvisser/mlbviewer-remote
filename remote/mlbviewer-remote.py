@@ -163,7 +163,7 @@ def stop():
 
 ## Start application
 if os.path.isdir(sys.argv[1]):
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
 else:
     print 'not a valid directory: ' + sys.argv[1]
     sys.exit(-1)
