@@ -157,10 +157,12 @@ def stop():
     global player
     
     # Stop mlbplay
-    watching = None
-    player.send_signal(signal.SIGINT)
-    player.wait()
-    player = None
+    if watching is not None:
+        watching = None
+    if player is not None:
+        player.send_signal(signal.SIGINT)
+        player.wait()
+        player = None
     
     # Redirect to gameday index
     return flask.redirect('/index')

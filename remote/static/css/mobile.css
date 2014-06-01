@@ -1,14 +1,23 @@
 body {
- font-size: 70%;
+ font-size: 75%;
+}
+
+div.team_info {
+ width: 90%;
 }
 
 div#wrapper {
  width: 95%;
 }
 
+img.button {
+ height: 23px;
+ width: 23px;
+}
+
 img.team_logo {
  height: 29px;
  width: 30px;
- padding-left: 7px;
- padding-right: 7px;
+ padding-left: 10px;
+ padding-right: 10px;
 }

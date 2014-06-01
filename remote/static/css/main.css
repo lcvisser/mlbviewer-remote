@@ -44,10 +44,6 @@ div.game_info {
 div.team_info {
  height: 42px;
  line-height: 40px;
- width: 45%;
-}
-
-div.team_name {
 }
 
 div#wrapper {
@@ -61,11 +57,6 @@ div#wrapper {
 h1 {
  font-size: 1.3em;
  text-align: center;
-}
-
-img.button {
- height: 30px;
- width: 30px;
 }
 
 img.button#prev {

@@ -2,8 +2,17 @@ body {
  font-size: 100%;
 }
 
+div.team_info {
+ width: 45%;
+}
+
 div#wrapper {
- width: 600px;
+ width: 570px;
+}
+
+img.button {
+ height: 30px;
+ width: 30px;
 }
 
 img.team_logo {
