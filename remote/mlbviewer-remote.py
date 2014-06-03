@@ -138,7 +138,7 @@ def watch(year, month, day, home, away):
     mm = '%02i' % int(month)
     dd = '%02i' % int(day)
     yy = str(year)[-2:]
-    cmd = 'python2.7 mlbplay.py v=%s j=%s/%s/%s' % (team, mm, dd, yy)
+    cmd = 'python2.7 mlbplay.py v=%s j=%s/%s/%s i=t1' % (team, mm, dd, yy)
     player = subprocess.Popen(cmd, shell=True, cwd=sys.argv[1])
     
     # Render template
@@ -160,8 +160,8 @@ def stop():
     if watching is not None:
         watching = None
     if player is not None:
-        player.send_signal(signal.SIGINT)
-        player.wait()
+        #player.send_signal(signal.SIGINT)
+        player.communicate('q')
         player = None
     
     # Redirect to gameday index
@@ -170,7 +170,7 @@ def stop():
 
 ## Start application
 if os.path.isdir(sys.argv[1]):
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
 else:
     print 'not a valid directory: ' + sys.argv[1]
     sys.exit(-1)
