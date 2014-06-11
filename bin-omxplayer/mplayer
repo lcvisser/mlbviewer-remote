@@ -1,11 +1,33 @@
 #!/bin/bash
 
-MLBTV_PIPE=mlbpipe
+CWD=$(dirname $0)
+MLBTV_PIPE=$CWD/mlbpipe
+OMXCTRL_PIPE=$CWD/omxpipe
 
+# Create pipe for video
 if [ ! -p $MLBTV_PIPE ]
 then
     mkfifo $MLBTV_PIPE
 fi
 
-cat <&0 > $MLBTV_PIPE | omxplayer -o hdmi $MLBTV_PIPE
+# Create pipe for control of omxplayer
+if [ ! -p $OMXCTRL_PIPE ]
+then
+    mkfifo $OMXCTRL_PIPE
+fi
+
+# Signal handler
+function stop {
+    echo "killing omxplayer (pid=$OMXPID)"
+    echo -n 'q' > $OMXCTRL_PIPE
+}
+trap 'stop' SIGINT SIGTERM
+
+
+# Start omxplayer
+( omxplayer -o hdmi $MLBTV_PIPE < $OMXCTRL_PIPE ) &
+OMXPID=$!
+
+# Connect feed to omxplayer
+cat <&0 > $MLBTV_PIPE 
 
