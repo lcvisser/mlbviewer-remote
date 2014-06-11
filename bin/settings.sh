@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function load_settings() {
+function load_settings {
     local SETTINGS_FILE="$HOME/.mlbviewer_remote.settings"
 
     if [ ! -f $SETTINGS_FILE ]
@@ -34,7 +34,7 @@ function load_settings() {
         if [[ $setting != '#'* ]]
         then
             s=$(cd $setting; pwd)
-            export MLBVIEWER_REMOTE_SETTINGS=$s:$MLBVIEWER_REMOTE_SETTINGS
+            export MLBVIEWER_REMOTE_SETTINGS=$MLBVIEWER_REMOTE_SETTINGS:$s
         fi
     done < $SETTINGS_FILE
 }

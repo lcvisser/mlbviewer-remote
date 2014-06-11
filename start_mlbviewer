@@ -5,9 +5,8 @@
 load_settings
 settings=(${MLBVIEWER_REMOTE_SETTINGS//:/ })
 
-# Note that settings are read in reverse order
-mlbviewer_path=${settings[1]}
-mplayer_path=${settings[0]}
+mlbviewer_path=${settings[0]}
+mplayer_path=${settings[1]}
 
 # Add mplayer path in front of the environment
 if [ -n $mplayer_path ]
