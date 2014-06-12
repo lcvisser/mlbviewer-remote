@@ -139,7 +139,7 @@ def watch(year, month, day, home, away):
     dd = '%02i' % int(day)
     yy = str(year)[-2:]
     cmd = 'python2.7 mlbplay.py v=%s j=%s/%s/%s i=t1' % (team, mm, dd, yy)
-    player = subprocess.Popen(cmd, shell=True, bufsize=-1, cwd=sys.argv[1])
+    player = subprocess.Popen(cmd.split(), cwd=sys.argv[1])
     
     # Render template
     game = {}
