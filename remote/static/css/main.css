@@ -71,6 +71,10 @@ img.team_logo {
  vertical-align: middle;
 }
 
+p.centered {
+ text-align: center;
+}
+
 .away {
  float: left;
 }
