@@ -119,14 +119,13 @@ def watch(year, month, day, home, away):
     
     # Select video stream
     fav = config.get('favorite')
-    if fav:
-        fav = fav[0]  # TODO: handle multiple favorites
-        if fav in (home, away):
-            # Favorite team is playing
-            team = fav
-        else:
-            # Use stream of home team
-            team = home
+    follow = config.get('video_follow')
+    if (home in fav) or (home in follow):
+        # Follow home team broadcast
+        team = home
+    elif (away in fav) or (away in follow):
+        # Follow away team broadcast
+        team = away
     else:
         # Use stream of home team
         team = home
