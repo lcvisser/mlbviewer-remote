@@ -43,7 +43,13 @@ Disclaimer
 This application is meant solely as a remote to mlbviewer, it does not provide
 any functionality by itself. Its intention is to make watching games easy within
 the comfort of your home. Please make sure that the application is only
-accessible to your home network, and do no unintentionally expose it to the
+accessible to your home network, and do not unintentionally expose it to the
 outside world.
+
+The team logos are shown in the game listing for your convencience, but they are
+trademarked by MLBAM and are not part of this package; they are linked from the
+MLBAM website. It is the author's belief that linking to these logos does not
+violate the terms of use, as long as the application is used only within your
+own home.
 
 Access to game streams requires a mlb.tv account. 
