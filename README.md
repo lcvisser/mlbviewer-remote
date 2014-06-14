@@ -4,6 +4,8 @@ mlbviewer-remote
 A web-based remote for mlbviewer. Useful to control mlbviewer from your phone or
 tablet with mlbviewer running on a computer connected to your tv.
 
+![mlbviewer-remote](mlbviewer-remote.png)
+
 Requirements
 ------------
  - python2.7
@@ -14,7 +16,7 @@ dependencies.
 
 Usage
 -----
-Execute 'start_remote' from the command line to start the application. On the
+Execute 'start-remote' from the command line to start the application. On the
 first run, you will be asked to provide the path to mlbviewer and mplayer. The
 application will then be started and can be reached on http://local-ip:5000.
 
@@ -27,7 +29,7 @@ settings will be honored (e.g. speed and nexdef options). If you have set
 favorite or video-follow teams, these teams' broadcast will be shown. Otherwise,
 the home team's broadcast is shown.
 
-Execute 'start_mlbviewer' to launch mlbviewer. Use this to set up the mlbviewer
+Execute 'start-mlbviewer' to launch mlbviewer. Use this to set up the mlbviewer
 configuration and to test your mplayer executable.
 
 Technical details
