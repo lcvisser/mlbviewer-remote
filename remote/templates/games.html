@@ -6,6 +6,7 @@
    <a href="{{ url_for('index', offset=nav.prev) }}"><img class="button" id="prev" alt="Previous day" src="{{ url_for('static', filename='img/prev.png') }}"></a>
    <a href="{{ url_for('index', offset=nav.next) }}"><img class="button" id="next" alt="Next day" src="{{ url_for('static', filename='img/next.png') }}"></a>
    <h1>Games for {{ date.day }}-{{ date.month }}-{{ date.year }}</h1>
+   <p>Click on a game to watch</p>
   </div>
 
  {% for game in games %}

@@ -16,6 +16,10 @@ div {
  font-size: 1.05em;
 }
 
+div.header {
+ text-align: center;
+}
+
 div.game {
  background: #ffffff;
  border: 1px solid #ffffff;
@@ -69,10 +73,6 @@ img.button#next {
 
 img.team_logo {
  vertical-align: middle;
-}
-
-p.centered {
- text-align: center;
 }
 
 .away {
