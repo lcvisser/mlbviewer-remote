@@ -16,7 +16,7 @@ Usage
 -----
 Execute 'start_remote' from the command line to start the application. On the
 first run, you will be asked to provide the path to mlbviewer and mplayer. The
-application will then be started and can be reached on http://<local-ip>:5000.
+application will then be started and can be reached on http://local-ip:5000.
 
 The remote control website will list all available games (corrected for your
 timezone). Click on one to start watching it. Clicking on the game your watching
