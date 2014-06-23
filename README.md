@@ -55,3 +55,7 @@ violate the terms of use, as long as the application is used only within your
 own home.
 
 Access to game streams requires a mlb.tv account. 
+
+The 'previous' and 'next' icons are from the Crystal Project Icons, copyright
+(c) 2006-2007 by Everaldo Coelho (http://www.everaldo.com)
+
