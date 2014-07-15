@@ -15,6 +15,7 @@ import sys
 import time
 
 from MLBviewer import MLBConfig, MLBGameTime, MLBSchedule, MLBSession
+from MLBviewer import MLBAuthError, MLBUrlError, MLBXmlError
 from MLBviewer import AUTHDIR, AUTHFILE, TEAMCODES
 
 ## Set up mlbviewer
@@ -75,14 +76,28 @@ def index():
     view_day = now + local_offset - eastern_offset + view_offset
     schedule_date = (view_day.year, view_day.month, view_day.day)
     
+    # Set navigation parameters
+    nav = {}
+    nav['prev'] = request_offset - 1
+    nav['next'] = request_offset + 1
+    
     # Start MLB.TV session
     if session is None:
-        session = MLBSession(user=config.data['user'], passwd=config.data['pass'])
-        session.getSessionData()
-
+        try:
+            session = MLBSession(user=config.data['user'], passwd=config.data['pass'])
+            session.getSessionData()
+        except MLBAuthError:
+            msg = 'Login failed'
+            return flask.render_template('error.html', error_msg=msg)
+    
     # Get game listing for requested day
-    schedule = MLBSchedule(ymd_tuple=schedule_date)
-    listing = schedule.getListings(config.data['speed'], config.data['blackout'])
+    try:
+        schedule = MLBSchedule(ymd_tuple=schedule_date)
+        listing = schedule.getListings(
+            config.data['speed'],
+            config.data['blackout'])
+    except (MLBUrlError, MLBXmlError):
+        return flask.render_template('nogames.html', nav=nav, date=view_day)
     
     # Parse game data
     games = []
@@ -97,11 +112,6 @@ def index():
             game['home_code'] = home
             game['home_name'] = TEAMCODES[home][1]
             games.append(game)
-    
-    # Set navigation parameters
-    nav = {}
-    nav['prev'] = request_offset - 1
-    nav['next'] = request_offset + 1
     
     # Render template
     context = {}
