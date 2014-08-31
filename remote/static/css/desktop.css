@@ -6,6 +6,11 @@ div.team_info {
  width: 47%;
 }
 
+div.box {
+ height: 44px;
+ min-width: 20px;
+}
+
 div#wrapper {
  width: 570px;
 }

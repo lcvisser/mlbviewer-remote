@@ -2,12 +2,12 @@
 
 {% block content %}
 
-  <div class="header">
+  <div class="centered">
    <h1>Now watching:</h1>
    <p>Click game to stop</p>
   </div>
 
-  <div class="game">
+  <div class="game selectable">
    <a href="{{ url_for('stop') }}">
    <div class="game_info">
     <div class="team_info away">

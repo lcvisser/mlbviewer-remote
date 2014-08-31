@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <div class="centered">
+   <h1>Select inning:</h1>
+   <p>Click inning to start watching</p>
+  </div>
+
+  <div class="game">
+   <div class="inning_table">
+    <div class="innings">
+     <div></div>
+    {% for i in range(1, game.innings+1) %}
+     <div class="box centered">{{ i }}</div>
+    {% endfor %}
+    </div>
+    
+    <div class="innings">
+     <div class="box">
+      <img class="team_logo" alt="{{ game.away_name }}" src="http://mlb.mlb.com/mlb/images/team_logos/logo_{{ game.away_code }}_79x76.jpg">
+      <span class="">{{ game.away_name }}</span>
+     </div>
+    {% for i in range(1, game.innings+1) %}
+     <div class="box centered selectable">
+      <a href="{{ url_for('start', inning='t%i' % i) }}">T</a>
+     </div>
+    {% endfor %}
+    </div>
+    
+    <div class="innings">
+     <div class="box">
+      <img class="team_logo" alt="{{ game.home_name }}" src="http://mlb.mlb.com/mlb/images/team_logos/logo_{{ game.home_code }}_79x76.jpg">
+      <span class="">{{ game.home_name }}</span>
+     </div>
+    {% for i in range(1, game.innings+1) %}
+     <div class="box centered selectable">
+      <a href="{{ url_for('start', inning='b%i' % i) }}">B</a>
+     </div>
+    {% endfor %}
+    </div>
+   </div>
+  </div>
+
+{% endblock %}

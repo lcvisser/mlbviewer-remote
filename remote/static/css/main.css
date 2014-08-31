@@ -16,7 +16,7 @@ div {
  font-size: 1.05em;
 }
 
-div.header {
+.centered {
  text-align: center;
 }
 
@@ -33,7 +33,7 @@ div.game {
  position: relative;
 }
 
-div.game:hover {
+div.selectable:hover {
  background-color: #c5e6ff;
  border: 1px solid #000000;
 }
@@ -47,6 +47,24 @@ div.game_info {
 div.team_info {
  height: 42px;
  line-height: 40px;
+}
+
+div.inning_table {
+ display: table;
+ margin-left: auto;
+ margin-right: auto;
+}
+
+div.innings {
+ display: table-row;
+}
+
+div.box {
+ border: 1px solid #ffffff;
+ display: table-cell;
+ padding-left: 4px;
+ padding-right: 4px;
+ font-size: 0.9em;
 }
 
 div#wrapper {

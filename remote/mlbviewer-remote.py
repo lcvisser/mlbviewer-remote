@@ -84,7 +84,9 @@ def index():
     # Start MLB.TV session
     if session is None:
         try:
-            session = MLBSession(user=config.data['user'], passwd=config.data['pass'])
+            session = MLBSession(
+                user=config.get('user'),
+                passwd=config.get('pass'))
             session.getSessionData()
         except MLBAuthError:
             msg = 'Login failed'
@@ -94,23 +96,33 @@ def index():
     try:
         schedule = MLBSchedule(ymd_tuple=schedule_date)
         listing = schedule.getListings(
-            config.data['speed'],
-            config.data['blackout'])
+            config.get('speed'),
+            config.get('blackout'))
     except (MLBUrlError, MLBXmlError):
         return flask.render_template('nogames.html', nav=nav, date=view_day)
     
     # Parse game data
     games = []
     for index, gamedata in enumerate(listing):
-        if gamedata[5] in ('I', 'CG'):  #TODO: can pre-game be added?
+        if gamedata[5] in ('I', 'CG'):
             # Game in progress or condensed game available
             away = gamedata[0]['away']
             home = gamedata[0]['home']
+            
+            try:
+                innings = schedule.parseInningsXml(
+                    gamedata[2][0][3],
+                    config.get('use_nexdef'))
+                number_of_innings = max(innings.keys())
+            except Exception:
+                number_of_innings = 0
+            
             game = {}
             game['away_code'] = away
             game['away_name'] = TEAMCODES[away][1]
             game['home_code'] = home
             game['home_name'] = TEAMCODES[home][1]
+            game['innings'] = number_of_innings
             games.append(game)
     
     # Render template
@@ -121,13 +133,11 @@ def index():
     return flask.render_template('games.html', **context)
 
 
-@app.route('/watch/<year>/<month>/<day>/<home>/<away>/')
-def watch(year, month, day, home, away):
-    global session
+@app.route('/watch/<year>/<month>/<day>/<home>/<away>/<innings>')
+def watch(year, month, day, home, away, innings):
     global watching
-    global player
     
-    # Select video stream
+    # Determine video stream
     fav = config.get('favorite')
     follow = config.get('video_follow')
     if (home in fav) or (home in follow):
@@ -140,25 +150,43 @@ def watch(year, month, day, home, away):
         # Use stream of home team
         team = home
     
-    # End session
-    session = None
-    
-    # Start mlbplay
-    mm = '%02i' % int(month)
-    dd = '%02i' % int(day)
-    yy = str(year)[-2:]
-    cmd = 'python2.7 mlbplay.py v=%s j=%s/%s/%s' % (team, mm, dd, yy)
-    player = subprocess.Popen(cmd.split(), cwd=sys.argv[1])
-    
-    # Render template
+    # Set game properties    
     game = {}
     game['away_code'] = away
     game['away_name'] = TEAMCODES[away][1]
     game['home_code'] = home
     game['home_name'] = TEAMCODES[home][1]
+    game['stream'] = team
+    game['year'] = str(year)[-2:]
+    game['month'] = '%02i' % int(month)
+    game['day'] = '%02i' % int(day)
+    game['innings'] = int(innings)
     watching = game
-    return flask.render_template('watching.html', game=game)
+    
+    # Render template for inning selection
+    return flask.render_template('innings.html', game=game)
 
+
+@app.route('/start/<inning>')
+def start(inning):
+    global session
+    global player
+    
+    # End session
+    session = None
+    
+    # Start mlbplay
+    cmd = 'python2.7 mlbplay.py i=%s v=%s j=%s/%s/%s' % (
+        inning,
+        watching['stream'],
+        watching['month'],
+        watching['day'],
+        watching['year'])
+    player = subprocess.Popen(cmd.split(), cwd=sys.argv[1])
+    
+    # Render template
+    return flask.render_template('watching.html', game=watching)
+    
 
 @app.route('/stop/')
 def stop():
@@ -179,7 +207,7 @@ def stop():
 
 ## Start application
 if os.path.isdir(sys.argv[1]):
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=False)
 else:
     print 'not a valid directory: ' + sys.argv[1]
     sys.exit(-1)
